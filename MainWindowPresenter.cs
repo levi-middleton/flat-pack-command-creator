@@ -96,18 +96,25 @@ namespace FlatPackCommandCreator
 		private void SetOutputText(string inboundText)
 		{
 			string[] lines = inboundText.Split('\n');
-			int numberOfBlocks = ((lines.Length - 1) / 2) * 3 + 5;
+
+			//sanitize the lines
+			for (int i = 0; i < lines.Length; ++i)
+			{
+				lines[i] = lines[i].Replace("\r", string.Empty);
+				if (lines[i].StartsWith("/"))
+					lines[i] = lines[i].Remove(0, 1);
+			}
 
 			//start with the first line
 			string output = ID_PREFIX;
 			output += string.Format(BLOCK, COMMAND_BLOCK);
-			output += string.Format(COMMAND_SUFFIX, lines[0].Replace("\r",string.Empty));
+			output += string.Format(COMMAND_SUFFIX, lines[0]);
 			output = ID_PREFIX + string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output);
 
 			//put the rest of the lines in, interspersing redstone blocks
 			for (int i = 1; i < lines.Length; ++i)
 			{
-				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, lines[i].Replace("\r", string.Empty)) + string.Format(RIDING_SUFFIX, output);
+				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, lines[i]) + string.Format(RIDING_SUFFIX, output);
 				if (i % 2 == 0)
 				{
 					output = ID_PREFIX + string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output);
@@ -121,10 +128,13 @@ namespace FlatPackCommandCreator
 			}
 
 			//add cleanup code
-			output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, string.Format(CLEANUP_COMMAND,numberOfBlocks-(LeaveInitialCommandBlock ? 2 : 1))) + string.Format(RIDING_SUFFIX, output);
-			
+			{
+				int numberOfBlocksUnder = ((lines.Length - 1) / 2) * 3 + 4; //5 6 7 8
+				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, string.Format(CLEANUP_COMMAND, numberOfBlocksUnder - (LeaveInitialCommandBlock ? 1 : 0))) + string.Format(RIDING_SUFFIX, output);
+			}
+
 			//capstone redstone block
-			output = string.Format(STARTING_BLOCK,string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output));
+			output = string.Format(STARTING_BLOCK, string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output));
 
 			OutputText = output;
 		}
