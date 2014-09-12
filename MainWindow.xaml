@@ -1,0 +1,25 @@
+﻿<Window x:Class="FlatPackCommandCreator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" ResizeMode="CanResizeWithGrip" >
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="boolConverter"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}" />
+        </ScrollViewer>
+        <ScrollViewer Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <TextBox TextWrapping="Wrap" IsReadOnly="True" Text="{Binding OutputText, UpdateSourceTrigger=PropertyChanged}"/>
+        </ScrollViewer>
+        <Label Grid.Row="1" Grid.Column="1" Visibility="{Binding IsInvalid, Converter={StaticResource boolConverter}, FallbackValue=Collapsed}" Foreground="Red">Output command is longer than 32,767!</Label>
+    </Grid>
+</Window>
