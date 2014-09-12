@@ -40,6 +40,7 @@ namespace FlatPackCommandCreator
 			switch (args.PropertyName)
 			{
 				case "InputText":
+				case "LeaveInitialCommandBlock":
 					{
 						SetOutputText(InputText);
 					}
@@ -82,6 +83,16 @@ namespace FlatPackCommandCreator
 			}
 		}
 
+		private bool _leaveInitialCommandBlock = false;
+		public bool LeaveInitialCommandBlock
+		{
+			get { return _leaveInitialCommandBlock; }
+			set
+			{
+				SetProperty(ref _leaveInitialCommandBlock, value);
+			}
+		}
+
 		private void SetOutputText(string inboundText)
 		{
 			string[] lines = inboundText.Split('\n');
@@ -110,7 +121,7 @@ namespace FlatPackCommandCreator
 			}
 
 			//add cleanup code
-			output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, string.Format(CLEANUP_COMMAND,numberOfBlocks-1)) + string.Format(RIDING_SUFFIX, output);
+			output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, string.Format(CLEANUP_COMMAND,numberOfBlocks-(LeaveInitialCommandBlock ? 2 : 1))) + string.Format(RIDING_SUFFIX, output);
 			
 			//capstone redstone block
 			output = string.Format(STARTING_BLOCK,string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output));

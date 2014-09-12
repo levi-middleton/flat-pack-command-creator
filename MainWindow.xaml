@@ -11,15 +11,19 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <ScrollViewer Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
+            <CheckBox IsChecked="{Binding LeaveInitialCommandBlock}">Leave initial command block</CheckBox>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}" />
         </ScrollViewer>
-        <ScrollViewer Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <TextBox TextWrapping="Wrap" IsReadOnly="True" Text="{Binding OutputText, UpdateSourceTrigger=PropertyChanged}"/>
         </ScrollViewer>
-        <Label Grid.Row="1" Grid.Column="1" Visibility="{Binding IsInvalid, Converter={StaticResource boolConverter}, FallbackValue=Collapsed}" Foreground="Red">Output command is longer than 32,767!</Label>
+        <Label Grid.Row="2" Grid.Column="1" Visibility="{Binding IsInvalid, Converter={StaticResource boolConverter}, FallbackValue=Collapsed}" Foreground="Red">Output command is longer than 32,767!</Label>
     </Grid>
 </Window>
