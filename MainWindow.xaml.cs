@@ -25,6 +25,7 @@ namespace FlatPackCommandCreator
 			InitializeComponent();
 
 			DataContext = new MainWindowPresenter();
+			tabControl.SelectedItem = tabFirstItem;
 		}
 	}
 }

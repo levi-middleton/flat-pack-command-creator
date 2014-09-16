@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace FlatPackCommandCreator
 {
@@ -41,6 +42,7 @@ namespace FlatPackCommandCreator
 			{
 				case "InputText":
 				case "LeaveInitialCommandBlock":
+				case "SetOutputText":
 					{
 						SetOutputText(InputText);
 					}
@@ -50,7 +52,21 @@ namespace FlatPackCommandCreator
 						IsInvalid = OutputText.Length > 32767;
 					}
 					break;
+				case "SelectedTab":
+					{
+						TabItem obj = SelectedTab as TabItem;
+						if (obj != null)
+						{
+							SetOutputText = SetOutputTextSinglePillar;
+						}
+					}
+					break;
 			}
+		}
+
+		public MainWindowPresenter()
+		{
+			SetOutputText = SetOutputTextSinglePillar;
 		}
 
 		private string _inputText = string.Empty;
@@ -93,7 +109,27 @@ namespace FlatPackCommandCreator
 			}
 		}
 
-		private void SetOutputText(string inboundText)
+		private object _selectedTab;
+		public object SelectedTab
+		{
+			get { return _selectedTab; }
+			set
+			{
+				SetProperty(ref _selectedTab, value);
+			}
+		}
+
+		private Action<string> _setOutputText = null;
+		public Action<string> SetOutputText
+		{
+			get { return _setOutputText; }
+			set
+			{
+				SetProperty(ref _setOutputText, value);
+			}
+		}
+
+		private void SetOutputTextSinglePillar(string inboundText)
 		{
 			string[] lines = inboundText.Split('\n');
 

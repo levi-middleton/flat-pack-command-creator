@@ -15,9 +15,14 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal">
-            <CheckBox IsChecked="{Binding LeaveInitialCommandBlock}">Leave initial command block</CheckBox>
-        </StackPanel>
+        <TabControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" SelectedItem="{Binding SelectedTab, Mode=OneWay}" x:Name="tabControl">
+            <TabItem x:Name="tabFirstItem">
+                <TabItem.Header>Single Pillar</TabItem.Header>
+                <StackPanel Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding LeaveInitialCommandBlock}">Leave initial command block</CheckBox>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
         <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <TextBox TextWrapping="Wrap" AcceptsReturn="True" Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}" />
         </ScrollViewer>
