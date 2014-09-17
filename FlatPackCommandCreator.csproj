@@ -53,6 +53,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DualPillarOutputFormatter.cs" />
+    <Compile Include="IOutputFormatter.cs" />
+    <Compile Include="RadioButtonConverter.cs" />
+    <Compile Include="SinglePillarOutputFormatter.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

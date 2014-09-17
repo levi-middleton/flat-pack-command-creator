@@ -42,9 +42,9 @@ namespace FlatPackCommandCreator
 			{
 				case "InputText":
 				case "LeaveInitialCommandBlock":
-				case "SetOutputText":
+				case "OutputFormatter":
 					{
-						SetOutputText(InputText);
+						OutputText = OutputFormatter.Format(InputText);
 					}
 					break;
 				case "OutputText":
@@ -57,7 +57,16 @@ namespace FlatPackCommandCreator
 						TabItem obj = SelectedTab as TabItem;
 						if (obj != null)
 						{
-							SetOutputText = SetOutputTextSinglePillar;
+							switch(obj.Header.ToString())
+							{
+								case "Single Pillar":
+								default:
+									OutputFormatter = new SinglePillarOutputFormatter(this);
+									break;
+								case "Dual Pillar":
+									OutputFormatter = new DualPillarOutputFormatter(this);
+									break;
+							}
 						}
 					}
 					break;
@@ -66,7 +75,7 @@ namespace FlatPackCommandCreator
 
 		public MainWindowPresenter()
 		{
-			SetOutputText = SetOutputTextSinglePillar;
+			OutputFormatter = new SinglePillarOutputFormatter(this);
 		}
 
 		private string _inputText = string.Empty;
@@ -119,72 +128,29 @@ namespace FlatPackCommandCreator
 			}
 		}
 
-		private Action<string> _setOutputText = null;
-		public Action<string> SetOutputText
+		private IOutputFormatter _outputFormatter = null;
+		public IOutputFormatter OutputFormatter
 		{
-			get { return _setOutputText; }
+			get { return _outputFormatter; }
 			set
 			{
-				SetProperty(ref _setOutputText, value);
+				SetProperty(ref _outputFormatter, value);
 			}
 		}
 
-		private void SetOutputTextSinglePillar(string inboundText)
+		private string _outputDirection = "North";
+		public string OutputDirection
 		{
-			string[] lines = inboundText.Split('\n');
-
-			//sanitize the lines
-			for (int i = 0; i < lines.Length; ++i)
+			get { return _outputDirection; }
+			set
 			{
-				lines[i] = lines[i].Replace("\r", string.Empty);
-				if (lines[i].StartsWith("/"))
-					lines[i] = lines[i].Remove(0, 1);
+				SetProperty(ref _outputDirection, value);
 			}
-
-			//start with the first line
-			string output = ID_PREFIX;
-			output += string.Format(BLOCK, COMMAND_BLOCK);
-			output += string.Format(COMMAND_SUFFIX, lines[0]);
-			output = ID_PREFIX + string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output);
-
-			//put the rest of the lines in, interspersing redstone blocks
-			for (int i = 1; i < lines.Length; ++i)
-			{
-				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, lines[i]) + string.Format(RIDING_SUFFIX, output);
-				if (i % 2 == 0)
-				{
-					output = ID_PREFIX + string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output);
-				}
-			}
-
-			//add an iron block if the top block is redstone
-			if (lines.Length % 2 == 1)
-			{
-				output = ID_PREFIX + string.Format(BLOCK, IRON_BLOCK) + string.Format(RIDING_SUFFIX, output);
-			}
-
-			//add cleanup code
-			{
-				int numberOfBlocksUnder = ((lines.Length - 1) / 2) * 3 + 4; //5 6 7 8
-				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, string.Format(CLEANUP_COMMAND, numberOfBlocksUnder - (LeaveInitialCommandBlock ? 1 : 0))) + string.Format(RIDING_SUFFIX, output);
-			}
-
-			//capstone redstone block
-			output = string.Format(STARTING_BLOCK, string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output));
-
-			OutputText = output;
 		}
 
-		private static readonly string STARTING_BLOCK = "summon FallingSand ~ ~3 ~ {{{0}}}";
-		private static readonly string BLOCK = "Block:{0},Time:1,DropItem:0";
-		private static readonly string ID_PREFIX = "id:FallingSand,";
-		private static readonly string COMMAND_SUFFIX = ",TileEntityData:{{Command:\"{0}\"}}";
-		private static readonly string RIDING_SUFFIX = ",Riding:{{{0}}}";
-
-		private static readonly string REDSTONE_BLOCK = "redstone_block";
-		private static readonly string IRON_BLOCK = "iron_block";
-		private static readonly string COMMAND_BLOCK = "command_block";
-
-		private static readonly string CLEANUP_COMMAND = "fill ~ ~1 ~ ~ ~-{0} ~ air";
+		private void SetOutputTextDualPillar(string inboundText)
+		{
+			OutputText = string.Empty;
+		}
 	}
 }
