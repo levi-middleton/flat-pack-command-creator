@@ -43,6 +43,7 @@ namespace FlatPackCommandCreator
 				case "InputText":
 				case "LeaveInitialCommandBlock":
 				case "OutputFormatter":
+				case "OutputDirection":
 					{
 						OutputText = OutputFormatter.Format(InputText);
 					}

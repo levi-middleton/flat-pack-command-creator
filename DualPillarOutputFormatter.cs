@@ -14,6 +14,11 @@ namespace FlatPackCommandCreator
 			_presenter = presenter;
 		}
 
+		/// <summary>
+		/// Formats the specified inbound text.
+		/// </summary>
+		/// <param name="inboundText">The inbound text.</param>
+		/// <returns></returns>
 		public string Format(string inboundText)
 		{
 			string[] lines = inboundText.Split('\n');
@@ -26,54 +31,59 @@ namespace FlatPackCommandCreator
 					lines[i] = lines[i].Remove(0, 1);
 			}
 
-			//start with the redstone filler command
-			string output = ID_PREFIX;
-			output += string.Format(BLOCK, COMMAND_BLOCK);
-			switch(_presenter.OutputDirection)
-			{
-				case "North": //-Z
-					output += string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~3 ~-1 ~ ~{0} ~-1 minecraft:redstone_block", lines.Length + 3));
-					break;
-				case "South":  //+Z
-					output += string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~3 ~1 ~ ~{0} ~1 minecraft:redstone_block", lines.Length + 3));
-					break;
-				case "East": //+X
-					output += string.Format(COMMAND_SUFFIX, string.Format("fill ~1 ~3 ~ ~1 ~{0} ~ minecraft:redstone_block", lines.Length + 3));
-					break;
-				case "West": //-X
-					output += string.Format(COMMAND_SUFFIX, string.Format("fill ~-1 ~3 ~ ~-1 ~{0} ~ minecraft:redstone_block", lines.Length + 3));
-					break;
-			}
-
-			output = ID_PREFIX + string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output);
-			output = ID_PREFIX + string.Format(BLOCK, IRON_BLOCK) + string.Format(RIDING_SUFFIX, output);
-
-			//put the rest of the lines in
+			//start with an iron block just cuz
+			string output = ID_PREFIX + string.Format(BLOCK, IRON_BLOCK);
+			
+			//put in the command lines
 			for (int i = 0; i < lines.Length; ++i)
 			{
 				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + string.Format(COMMAND_SUFFIX, lines[i]) + string.Format(RIDING_SUFFIX, output);
 			}
 
-			//capstone cleanup command block
+			//cleanup command block
 			{
-				string cleanup = string.Empty;
+				string generated_command_suffix = string.Empty;
 				switch (_presenter.OutputDirection)
 				{
 					case "North": //-Z
-						cleanup = string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~ ~-1 ~ ~-{0} ~ minecraft:air", lines.Length + 3 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~2 ~-1 ~ ~-{0} ~ minecraft:air", lines.Length + 2 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
 						break;
 					case "South":  //+Z
-						cleanup = string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~ ~1 ~ ~-{0} ~ minecraft:air", lines.Length + 3 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~2 ~1 ~ ~-{0} ~ minecraft:air", lines.Length + 2 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
 						break;
 					case "East": //+X
-						cleanup = string.Format(COMMAND_SUFFIX, string.Format("fill ~1 ~ ~ ~ ~-{0} ~ minecraft:air", lines.Length + 3 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~1 ~2 ~ ~ ~-{0} ~ minecraft:air", lines.Length + 2 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
 						break;
 					case "West": //-X
-						cleanup = string.Format(COMMAND_SUFFIX, string.Format("fill ~-1 ~ ~ ~ ~-{0} ~ minecraft:air", lines.Length + 3 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~-1 ~2 ~ ~ ~-{0} ~ minecraft:air", lines.Length + 2 - (_presenter.LeaveInitialCommandBlock ? 1 : 0)));
 						break;
 				}
-				output = string.Format(STARTING_BLOCK, string.Format(BLOCK, COMMAND_BLOCK) + cleanup + string.Format(RIDING_SUFFIX, output));
+				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + generated_command_suffix + string.Format(RIDING_SUFFIX, output);
 			}
+
+			//command block for power
+			{
+				string generated_command_suffix = string.Empty;
+				switch (_presenter.OutputDirection)
+				{
+					case "North": //-Z
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~-1 ~-1 ~ ~-{0} ~-1 minecraft:redstone_block", lines.Length + 1));
+						break;
+					case "South":  //+Z
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~ ~-1 ~1 ~ ~-{0} ~1 minecraft:redstone_block", lines.Length + 1));
+						break;
+					case "East": //+X
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~1 ~-1 ~ ~1 ~-{0} ~ minecraft:redstone_block", lines.Length + 1));
+						break;
+					case "West": //-X
+						generated_command_suffix = string.Format(COMMAND_SUFFIX, string.Format("fill ~-1 ~-1 ~ ~-1 ~-{0} ~ minecraft:redstone_block", lines.Length + 1));
+						break;
+				}
+				output = ID_PREFIX + string.Format(BLOCK, COMMAND_BLOCK) + generated_command_suffix + string.Format(RIDING_SUFFIX, output);
+			}
+
+			//capstone redstone block
+			output = string.Format(STARTING_BLOCK, string.Format(BLOCK, REDSTONE_BLOCK) + string.Format(RIDING_SUFFIX, output));
 
 			return output;
 		}
