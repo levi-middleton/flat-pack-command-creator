@@ -61,7 +61,7 @@ namespace FlatPackCommandCreator
 		}
 
 		private static readonly string STARTING_BLOCK = "summon FallingSand ~ ~3 ~ {{{0}}}";
-		private static readonly string BLOCK = "Block:{0},Time:1,DropItem:0";
+		private static readonly string BLOCK = "Block:{0},Time:1";
 		private static readonly string ID_PREFIX = "id:FallingSand,";
 		private static readonly string COMMAND_SUFFIX = ",TileEntityData:{{Command:\"{0}\"}}";
 		private static readonly string RIDING_SUFFIX = ",Riding:{{{0}}}";
